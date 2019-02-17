@@ -51,7 +51,6 @@ def sendAPDU(apdu):
 	sendData = pn532.call_function(PN532.PN532_COMMAND_TGSETDATA,params=apdu)
 
 def getAPDU():
-	global apdu
 	result = pn532.call_function(PN532.PN532_COMMAND_TGGETDATA,255)
 	apdu = printString(result)[2:]
 	return apdu
