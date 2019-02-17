@@ -1,4 +1,4 @@
-# Example of detecting and reading a block from a MiFare NFC card.
+# Example of running the PN532 as target(emulation mode)
 # Author: Salvador Mendoza(salmg.net)
 # More info: http://salmg.net/2019/02/15/chiptonfc-local-relay-sniffer
 
