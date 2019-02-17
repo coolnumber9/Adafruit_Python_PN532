@@ -16,7 +16,7 @@ def printString(data1):
 		out += '%02x' % data1[x]
     return out
 
-#credits to Adam Lourie(Mayor Malfunction)
+#----Credits to Adam Laurie(Major Malfunction)
 def TargetConf():
 	mode = '00'
 	sens_res = '0800'
@@ -42,7 +42,7 @@ def TargetConf():
 		tk= ''
 
 	return mode+sens_res+uid+sel_res+felica+nfcid+lengt+gt+lentk+tk
-
+#----
 print "Checking PN532?"
 pn532.begin()
 
