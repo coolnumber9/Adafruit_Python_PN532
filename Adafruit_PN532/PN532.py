@@ -220,6 +220,7 @@ class PN532(object):
         frame[-2] = ~checksum & 0xFF
         frame[-1] = PN532_POSTAMBLE
         # Send frame.
+	#print('Write Frame: 0x{0}'.format(binascii.hexlify(frame)))
         logger.debug('Write frame: 0x{0}'.format(binascii.hexlify(frame)))
         self._gpio.set_low(self._cs)
         self._busy_wait_ms(2)
@@ -235,6 +236,7 @@ class PN532(object):
         self._gpio.set_low(self._cs)
         self._busy_wait_ms(2)
         response = self._spi.transfer(frame)
+	#print('SPI Read: 0x{0}'.format(binascii.hexlify(response)))
         self._gpio.set_high(self._cs)
         return response
 
@@ -247,6 +249,7 @@ class PN532(object):
         # Read frame with expected length of data.
         response = self._read_data(length+8)
         logger.debug('Read frame: 0x{0}'.format(binascii.hexlify(response)))
+	#print(' Read frame: 0x{0}'.format(binascii.hexlify(response)))
         # Check frame starts with 0x01 and then has 0x00FF (preceeded by optional
         # zeros).
         if response[0] != 0x01:
@@ -264,16 +267,17 @@ class PN532(object):
                 raise RuntimeError('Response contains no data!')
         # Check length & length checksum match.
         frame_len = response[offset]
+	"""
         if (frame_len + response[offset+1]) & 0xFF != 0:
             raise RuntimeError('Response length checksum did not match length!')
         # Check frame checksum value matches bytes.
         checksum = reduce(self._uint8_add, response[offset+2:offset+2+frame_len+1], 0)
         if checksum != 0:
             raise RuntimeError('Response checksum did not match expected value!')
-        # Return frame data.
+        # Return frame data."""
         return response[offset+2:offset+2+frame_len]
 
-    def _wait_ready(self, timeout_sec=1):
+    def _wait_ready(self, timeout_sec=10):
         """Wait until the PN532 is ready to receive commands.  At most wait
         timeout_sec seconds for the PN532 to be ready.  If the PN532 is ready
         before the timeout is exceeded then True will be returned, otherwise
@@ -298,7 +302,7 @@ class PN532(object):
             self._gpio.set_high(self._cs)
         return True
 
-    def call_function(self, command, response_length=0, params=[], timeout_sec=1):
+    def call_function(self, command, response_length=0, params=[], timeout_sec=10):
         """Send specified command to the PN532 and expect up to response_length
         bytes back in a response.  Note that less than the expected bytes might
         be returned!  Params can optionally specify an array of bytes to send as
@@ -314,18 +318,21 @@ class PN532(object):
         # Send frame and wait for response.
         self._write_frame(data)
         if not self._wait_ready(timeout_sec):
+	    print "Error at waiting for ready"
             return None
         # Verify ACK response and wait to be ready for function response.
         response = self._read_data(len(PN532_ACK))
         if response != PN532_ACK:
             raise RuntimeError('Did not receive expected ACK from PN532!')
         if not self._wait_ready(timeout_sec):
+	    print "Error at waiting for ready 2"
             return None
         # Read response bytes.
         response = self._read_frame(response_length+2)
         # Check that response is for the called function.
-        if not (response[0] == PN532_PN532TOHOST and response[1] == (command+1)):
-            raise RuntimeError('Received unexpected command response!')
+	#print(' Response: 0x{0}'.format(binascii.hexlify(response)))
+        #if not (response[0] == PN532_PN532TOHOST and response[1] == (command+1)):
+        #    raise RuntimeError('Received unexpected command response!')
         # Return response data.
         return response[2:]
 
@@ -378,6 +385,7 @@ class PN532(object):
         if response[5] > 7:
             raise RuntimeError('Found card with unexpectedly long UID!')
         # Return UID of card.
+	print('Response: {0}'.format(response))
         return response[6:6+response[5]]
 
     def mifare_classic_authenticate_block(self, uid, block_number, key_number, key):
