@@ -47,6 +47,15 @@ def TargetConf():
 
 	return mode+sens_res+uid+sel_res+felica+nfcid+lengt+gt+lentk+tk
 #----
+def sendAPDU(apdu):
+	sendData = pn532.call_function(PN532.PN532_COMMAND_TGSETDATA,params=apdu)
+
+def getAPDU():
+	global apdu
+	result = pn532.call_function(PN532.PN532_COMMAND_TGGETDATA,255)
+	apdu = printString(result)[2:]
+	return apdu
+
 print "Checking PN532?"
 pn532.begin()
 
@@ -64,16 +73,4 @@ runit = pn532.call_function(PN532.PN532_COMMAND_TGINITASTARGET,params=toBytes(Ta
 print "-----\nGet Data> ",
 apdu = pn532.call_function(PN532.PN532_COMMAND_TGGETDATA,255)
 
-def sendAPDU(apdu):
-	sendData = pn532.call_function(PN532.PN532_COMMAND_TGSETDATA,params=apdu)
-
-def getAPDU():
-	global apdu
-	result = pn532.call_function(PN532.PN532_COMMAND_TGGETDATA,255)
-	apdu = printString(result)[2:]
-	return apdu
-
-card= "6F208407A0000000031010A515500B56697361204372656469748701015F2D02656E9000"
-pos = sendAPDU(card)
-answerPos = getAPDU()
-print(answerPos)
+print(apdu)
