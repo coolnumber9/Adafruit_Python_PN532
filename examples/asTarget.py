@@ -1,3 +1,7 @@
+# Example of detecting and reading a block from a MiFare NFC card.
+# Author: Salvador Mendoza(salmg.net)
+# More info: http://salmg.net/2019/02/15/chiptonfc-local-relay-sniffer
+
 from smartcard.util import toHexString, toBytes
 import PN532
 
