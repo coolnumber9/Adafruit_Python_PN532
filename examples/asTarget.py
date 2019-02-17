@@ -74,3 +74,8 @@ print "-----\nGet Data> ",
 apdu = pn532.call_function(PN532.PN532_COMMAND_TGGETDATA,255)
 
 print(apdu)
+
+cardApdu = "6A82"
+pos = sendAPDU(cardApdu)
+answerPos = getAPDU()
+print(answerPos)
